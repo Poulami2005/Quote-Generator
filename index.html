@@ -34,6 +34,15 @@
             color: #333;
             min-height: 120px;
             margin: 20px 0;
+            opacity: 0;
+            transition: opacity 0.7s ease-in-out;
+        }
+        #author {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 20px;
+            opacity: 0;
+            transition: opacity 0.7s ease-in-out;
         }
         input, select, button {
             padding: 10px 15px;
@@ -76,44 +85,46 @@
     
     <button onclick="generateQuote()">Get Quote</button>
     <button id="twitterBtn">Share on Twitter</button>
+    <button onclick="copyQuote()">Copy Quote</button>
     
     <div id="quoteBox">Your quote will appear here!</div>
+    <div id="author"></div>
     <div id="endMessage"></div>
 </div>
 
 <script>
-    // Quotes array with categories
+    // Quotes array with category and author
     const quotes = [
-        { text: "Believe in yourself.", category: "motivation" },
-        { text: "Small steps every day lead to big results.", category: "motivation" },
-        { text: "Dreams don’t work unless you do.", category: "dream" },
-        { text: "Stay patient and trust your journey.", category: "life" },
-        { text: "Hard work beats talent when talent doesn’t work hard.", category: "work" },
-        { text: "You are capable of more than you think.", category: "motivation" },
-        { text: "Success is the sum of small efforts repeated day in and day out.", category: "success" },
-        { text: "Don't watch the clock; do what it does. Keep going.", category: "work" },
-        { text: "The secret of getting ahead is getting started.", category: "success" },
-        { text: "It always seems impossible until it’s done.", category: "dream" },
-        { text: "Push yourself, because no one else is going to do it for you.", category: "motivation" },
-        { text: "Great things never come from comfort zones.", category: "motivation" },
-        { text: "Dream it. Wish it. Do it.", category: "dream" },
-        { text: "Stay focused and never give up.", category: "motivation" },
-        { text: "Don’t stop when you’re tired. Stop when you’re done.", category: "work" },
-        { text: "Do something today that your future self will thank you for.", category: "life" },
-        { text: "The harder you work for something, the greater you’ll feel when you achieve it.", category: "work" },
-        { text: "Dream bigger. Do bigger.", category: "dream" },
-        { text: "Don’t wait for opportunity. Create it.", category: "success" },
-        { text: "Sometimes later becomes never. Do it now.", category: "motivation" },
-        { text: "Little things make big days.", category: "life" },
-        { text: "Don’t count the days, make the days count.", category: "life" },
-        { text: "The key to success is to focus on goals, not obstacles.", category: "success" },
-        { text: "Dreams are the touchstones of our character.", category: "dream" },
-        { text: "The way to get started is to quit talking and begin doing.", category: "success" },
-        { text: "Opportunities don’t happen. You create them.", category: "success" },
-        { text: "Success doesn’t just find you. You have to go out and get it.", category: "success" },
-        { text: "Don’t be afraid to give up the good to go for the great.", category: "success" },
-        { text: "Your limitation—it’s only your imagination.", category: "motivation" },
-        { text: "Motivation is what gets you started. Habit is what keeps you going.", category: "motivation" }
+        { text: "Believe in yourself.", author: "Unknown", category: "motivation" },
+        { text: "Small steps every day lead to big results.", author: "Unknown", category: "motivation" },
+        { text: "Dreams don’t work unless you do.", author: "John C. Maxwell", category: "dream" },
+        { text: "Stay patient and trust your journey.", author: "Unknown", category: "life" },
+        { text: "Hard work beats talent when talent doesn’t work hard.", author: "Tim Notke", category: "work" },
+        { text: "You are capable of more than you think.", author: "Unknown", category: "motivation" },
+        { text: "Success is the sum of small efforts repeated day in and day out.", author: "Robert Collier", category: "success" },
+        { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson", category: "work" },
+        { text: "The secret of getting ahead is getting started.", author: "Mark Twain", category: "success" },
+        { text: "It always seems impossible until it’s done.", author: "Nelson Mandela", category: "dream" },
+        { text: "Push yourself, because no one else is going to do it for you.", author: "Unknown", category: "motivation" },
+        { text: "Great things never come from comfort zones.", author: "Unknown", category: "motivation" },
+        { text: "Dream it. Wish it. Do it.", author: "Unknown", category: "dream" },
+        { text: "Stay focused and never give up.", author: "Unknown", category: "motivation" },
+        { text: "Don’t stop when you’re tired. Stop when you’re done.", author: "Marilyn Monroe", category: "work" },
+        { text: "Do something today that your future self will thank you for.", author: "Sean Patrick Flanery", category: "life" },
+        { text: "The harder you work for something, the greater you’ll feel when you achieve it.", author: "Unknown", category: "work" },
+        { text: "Dream bigger. Do bigger.", author: "Unknown", category: "dream" },
+        { text: "Don’t wait for opportunity. Create it.", author: "George Bernard Shaw", category: "success" },
+        { text: "Sometimes later becomes never. Do it now.", author: "Unknown", category: "motivation" },
+        { text: "Little things make big days.", author: "Unknown", category: "life" },
+        { text: "Don’t count the days, make the days count.", author: "Muhammad Ali", category: "life" },
+        { text: "The key to success is to focus on goals, not obstacles.", author: "Unknown", category: "success" },
+        { text: "Dreams are the touchstones of our character.", author: "Henry David Thoreau", category: "dream" },
+        { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney", category: "success" },
+        { text: "Opportunities don’t happen. You create them.", author: "Chris Grosser", category: "success" },
+        { text: "Success doesn’t just find you. You have to go out and get it.", author: "Unknown", category: "success" },
+        { text: "Don’t be afraid to give up the good to go for the great.", author: "John D. Rockefeller", category: "success" },
+        { text: "Your limitation—it’s only your imagination.", author: "Unknown", category: "motivation" },
+        { text: "Motivation is what gets you started. Habit is what keeps you going.", author: "Jim Rohn", category: "motivation" }
     ];
 
     let remainingQuotes = [...quotes];
@@ -122,7 +133,9 @@
         const keyword = document.getElementById("keyword").value.toLowerCase();
         const category = document.getElementById("category").value;
         const quoteBox = document.getElementById("quoteBox");
+        const authorBox = document.getElementById("author");
         const endMessage = document.getElementById("endMessage");
+        const twitterBtn = document.getElementById("twitterBtn");
 
         // Filter quotes based on keyword and category
         let filteredQuotes = remainingQuotes.filter(q => {
@@ -133,33 +146,52 @@
 
         if (filteredQuotes.length === 0) {
             quoteBox.innerText = "No quotes found for this keyword/category!";
+            authorBox.innerText = "";
             endMessage.innerText = "";
-            document.getElementById("twitterBtn").style.display = "none";
+            twitterBtn.style.display = "none";
             return;
         }
 
         const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
         const selectedQuote = filteredQuotes[randomIndex];
 
-        quoteBox.innerText = selectedQuote.text;
+        // Show quote with fade-in animation
+        quoteBox.style.opacity = 0;
+        authorBox.style.opacity = 0;
+        setTimeout(() => {
+            quoteBox.innerText = `"${selectedQuote.text}"`;
+            authorBox.innerText = `— ${selectedQuote.author}`;
+            quoteBox.style.opacity = 1;
+            authorBox.style.opacity = 1;
+        }, 100);
+
         endMessage.innerText = "";
-        document.getElementById("twitterBtn").style.display = "inline-block";
+        twitterBtn.style.display = "inline-block";
 
         // Update Twitter share button
-        const twitterUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(selectedQuote.text);
-        document.getElementById("twitterBtn").onclick = () => {
-            window.open(twitterUrl, "_blank");
-        }
+        const twitterUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(selectedQuote.text + " — " + selectedQuote.author);
+        twitterBtn.onclick = () => { window.open(twitterUrl, "_blank"); }
 
-        // Remove the displayed quote from remainingQuotes so it never repeats
+        // Remove displayed quote so it doesn't repeat
         remainingQuotes = remainingQuotes.filter(q => q.text !== selectedQuote.text);
 
-        // If all quotes used
+        // End message when all quotes used
         if (remainingQuotes.length === 0) {
             endMessage.innerText = "✨ All quotes have been shown! Refresh the page to start again ✨";
+        }
+    }
+
+    function copyQuote() {
+        const quote = document.getElementById("quoteBox").innerText;
+        const author = document.getElementById("author").innerText;
+        if (quote) {
+            navigator.clipboard.writeText(`${quote} ${author}`).then(() => {
+                alert("Quote copied to clipboard!");
+            });
         }
     }
 </script>
 
 </body>
 </html>
+
