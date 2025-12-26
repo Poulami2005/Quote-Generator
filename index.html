@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Advanced Quote Generator</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        #quoteContainer {
+            background: #fff;
+            padding: 40px 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 700px;
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        #quoteContainer:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        #quoteBox {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            color: #333;
+            min-height: 120px;
+            margin: 20px 0;
+        }
+        input, select, button {
+            padding: 10px 15px;
+            margin: 5px;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: none;
+        }
+        button {
+            background: linear-gradient(90deg, #36d1dc, #5b86e5);
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background: linear-gradient(90deg, #5b86e5, #36d1dc);
+            transform: scale(1.05);
+        }
+        #endMessage {
+            color: #e74c3c;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div id="quoteContainer">
+    <h1>Advanced Quote Generator</h1>
+    
+    <input type="text" id="keyword" placeholder="Type a word e.g., success">
+    <select id="category">
+        <option value="all">All Categories</option>
+        <option value="motivation">Motivation</option>
+        <option value="success">Success</option>
+        <option value="dream">Dream</option>
+        <option value="life">Life</option>
+        <option value="work">Work</option>
+    </select>
+    
+    <button onclick="generateQuote()">Get Quote</button>
+    <button id="twitterBtn">Share on Twitter</button>
+    
+    <div id="quoteBox">Your quote will appear here!</div>
+    <div id="endMessage"></div>
+</div>
+
+<script>
+    // Quotes array with categories
+    const quotes = [
+        { text: "Believe in yourself.", category: "motivation" },
+        { text: "Small steps every day lead to big results.", category: "motivation" },
+        { text: "Dreams don’t work unless you do.", category: "dream" },
+        { text: "Stay patient and trust your journey.", category: "life" },
+        { text: "Hard work beats talent when talent doesn’t work hard.", category: "work" },
+        { text: "You are capable of more than you think.", category: "motivation" },
+        { text: "Success is the sum of small efforts repeated day in and day out.", category: "success" },
+        { text: "Don't watch the clock; do what it does. Keep going.", category: "work" },
+        { text: "The secret of getting ahead is getting started.", category: "success" },
+        { text: "It always seems impossible until it’s done.", category: "dream" },
+        { text: "Push yourself, because no one else is going to do it for you.", category: "motivation" },
+        { text: "Great things never come from comfort zones.", category: "motivation" },
+        { text: "Dream it. Wish it. Do it.", category: "dream" },
+        { text: "Stay focused and never give up.", category: "motivation" },
+        { text: "Don’t stop when you’re tired. Stop when you’re done.", category: "work" },
+        { text: "Do something today that your future self will thank you for.", category: "life" },
+        { text: "The harder you work for something, the greater you’ll feel when you achieve it.", category: "work" },
+        { text: "Dream bigger. Do bigger.", category: "dream" },
+        { text: "Don’t wait for opportunity. Create it.", category: "success" },
+        { text: "Sometimes later becomes never. Do it now.", category: "motivation" },
+        { text: "Little things make big days.", category: "life" },
+        { text: "Don’t count the days, make the days count.", category: "life" },
+        { text: "The key to success is to focus on goals, not obstacles.", category: "success" },
+        { text: "Dreams are the touchstones of our character.", category: "dream" },
+        { text: "The way to get started is to quit talking and begin doing.", category: "success" },
+        { text: "Opportunities don’t happen. You create them.", category: "success" },
+        { text: "Success doesn’t just find you. You have to go out and get it.", category: "success" },
+        { text: "Don’t be afraid to give up the good to go for the great.", category: "success" },
+        { text: "Your limitation—it’s only your imagination.", category: "motivation" },
+        { text: "Motivation is what gets you started. Habit is what keeps you going.", category: "motivation" }
+    ];
+
+    let remainingQuotes = [...quotes];
+
+    function generateQuote() {
+        const keyword = document.getElementById("keyword").value.toLowerCase();
+        const category = document.getElementById("category").value;
+        const quoteBox = document.getElementById("quoteBox");
+        const endMessage = document.getElementById("endMessage");
+
+        // Filter quotes based on keyword and category
+        let filteredQuotes = remainingQuotes.filter(q => {
+            const matchesKeyword = q.text.toLowerCase().includes(keyword);
+            const matchesCategory = category === "all" || q.category === category;
+            return matchesKeyword && matchesCategory;
+        });
+
+        if (filteredQuotes.length === 0) {
+            quoteBox.innerText = "No quotes found for this keyword/category!";
+            endMessage.innerText = "";
+            document.getElementById("twitterBtn").style.display = "none";
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
+        const selectedQuote = filteredQuotes[randomIndex];
+
+        quoteBox.innerText = selectedQuote.text;
+        endMessage.innerText = "";
+        document.getElementById("twitterBtn").style.display = "inline-block";
+
+        // Update Twitter share button
+        const twitterUrl = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(selectedQuote.text);
+        document.getElementById("twitterBtn").onclick = () => {
+            window.open(twitterUrl, "_blank");
+        }
+
+        // Remove the displayed quote from remainingQuotes so it never repeats
+        remainingQuotes = remainingQuotes.filter(q => q.text !== selectedQuote.text);
+
+        // If all quotes used
+        if (remainingQuotes.length === 0) {
+            endMessage.innerText = "✨ All quotes have been shown! Refresh the page to start again ✨";
+        }
+    }
+</script>
+
+</body>
+</html>
